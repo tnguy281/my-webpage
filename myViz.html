@@ -7,15 +7,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>myViz</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script> <!-- Load D3.js library -->
 </head>
 <body>
     <div class="container">
         <h1>Welcome to myViz page !</h1>
         <h2>This is my visualization page, pretty blank right ?</h2>
         <h3>So, enjoy this visualization instead:</h3>
-        <img src="c:\Users\Tri\Desktop\CS39AE-001\cat.jpg" alt="Cat Face" width="500">
+        <img src="C:\Users\Tri\Desktop\CS39AE-001\cat.jpg" alt="Cat Face" width="500">
         <h4>Follow this link below to see the homepage</h4>
         <a href="index.html">Homepage</a>
+
+        <!-- D3.js example -->
+        <p>An example to visualize data:</p>
+        <svg width="500" height="500"></svg>
+        <script>
+            const svg1 = d3.select('svg');
+
+            svg1.append('circle')
+                .attr('r', 100)
+                .attr('cx', 250)
+                .attr('cy', 250)
+                .attr('fill', 'blue');
+        </script>
+                
+        <!-- Dataset example -->
+        <p>Here is a dataset visualization example:</p>
+        <!-- Setting up the SVG container-->
+        <svg id="svg2" width="800" height="500"></svg>
+        <script>
+            const svg2 = d3.select('#svg2');
+            const width = 800;
+            const height = 500;
+            const margin = { top: 40, right: 20, bottom: 60, left: 80 };
+
+            // Load data from a CSV file
+            d3.csv("spending_totals.csv").then(function(data) {
+                data.forEach(d => {
+                    d.year = +d.year;
+                    d.total = +d.total;
+                });
+
+                // Create scales for x and y axis
+                const xScale = d3.scaleBand()
+                    .domain(data.map(d => d.year))
+                    .range([margin.left, width - margin.right])
+                    .padding(0.2);
+                    
+                const yScale = d3.scaleLinear()
+                    .domain([0, d3.max(data, d => d.total)])
+                    .nice()
+                    .range([height - margin.bottom, margin.top]);
+
+                // Append x-axis
+                svg2.append('g')
+                    .attr('transform', 'translate(0, ${height - margin.bottom})')
+                    .call(d3.axisBottom(xScale).tickFormat(d3.format('d')))
+                    .attr("font-size", '16px');
+                
+                // Append y-axis
+                svg2.append('g')
+                    .attr('transform', 'translate(${margin.left}, 0)')
+                    .call(d3.axisLeft(yScale))
+                    .attr("font-size", '16px');
+
+                // Append bars
+                svg2.selectAll('.bar')
+                    .data(data)
+                    .enter().append('rect')
+                    .attr('class', 'bar')
+                    .attr('x', d => xScale(d.year))
+                    .attr('y', d => yScale(d.total))
+                    .attr('width', xScale.bandwidth())
+                    .attr('height', d => height - margin.bottom - yScale(d.total))
+                    .attr('fill', 'green');
+
+                // Add labels for each bar
+                svg2.selectAll('.label')
+                    .data(data)
+                    .enter().append('text')
+                    .attr('class', 'label')
+                    .text(d => d.total)
+                    .attr('x', d => xScale(d.year) + xScale.bandwidth() / 2)
+                    .attr('y', d => yScale(d.total) - 5)
+                    .attr('text-anchor', 'middle')
+                    .attr('font-size', '12px')
+                    .attr('fill', 'black');
+            });
+        </script>
     </div>
 </body>
 </html>
