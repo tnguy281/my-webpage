@@ -12,11 +12,13 @@
 <body>
     <div class="container">
         <h1>Welcome to myViz page !</h1>
+        <h4>Follow this link below to see the homepage</h4>
+        <a href="index.html">Homepage</a>
+        <h5>Follow this link to go to lab 4.1</h5>
+        <a href="lab4_1.html">To lab 4.1</a>
         <h2>This is my visualization page, pretty blank right ?</h2>
         <h3>So, enjoy this visualization instead:</h3>
         <img src="cat.jpg" alt="Cat Face" width="500">
-        <h4>Follow this link below to see the homepage</h4>
-        <a href="index.html">Homepage</a>
 
         <!-- D3.js example -->
         <p>An example to visualize data:</p>
@@ -36,7 +38,7 @@
         <!-- Setting up the SVG container -->
         <svg id="svg2" width="800" height="500"></svg>
         <script>
-            const svg2 = d3.select('svg2');
+            const svg2 = d3.select('#svg2');
             const width = 800;
             const height = 500;
             const margin = { top: 40, right: 20, bottom: 60, left: 80 };
