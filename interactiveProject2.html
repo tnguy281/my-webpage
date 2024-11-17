@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive UFO Sightings</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: blue;
+        }
+        svg {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="tableauProject.html">Tableau Project Page</a>
+        <a href="lab4_1.html">Lab 4.1 Page</a>
+        <a href="myViz.html">myViz Page</a>
+        <a href="index.html">index Page</a>
+    </nav>
+
+    <h1>Top 10 States with Most UFO Sightings</h1>
+    <svg></svg>
+
+    <script>
+        d3.csv("ufo.csv").then(function(data) {
+            // Process data
+            let sightingsByState = d3.rollup(data, v => v.length, d => d.state);
+            let sortedData = Array.from(sightingsByState, ([state, count]) => ({state, count}))
+                                  .sort((a, b) => d3.descending(a.count, b.count))
+                                  .slice(0, 10);
+
+            // Set up SVG dimensions
+            const margin = {top: 20, right: 30, bottom: 40, left: 90};
+            const width = 960 - margin.left - margin.right;
+            const height = 500 - margin.top - margin.bottom;
+
+            const svg = d3.select("svg")
+                          .attr("width", width + margin.left + margin.right)
+                          .attr("height", height + margin.top + margin.bottom)
+                          .append("g")
+                          .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Set up scales
+            const x = d3.scaleLinear()
+                        .domain([0, d3.max(sortedData, d => d.count)])
+                        .range([0, width]);
+
+            const y = d3.scaleBand()
+                        .domain(sortedData.map(d => d.state))
+                        .range([0, height])
+                        .padding(0.1);
+
+            // Add bars
+            svg.selectAll(".bar")
+               .data(sortedData)
+               .enter()
+               .append("rect")
+               .attr("class", "bar")
+               .attr("x", 0)
+               .attr("y", d => y(d.state))
+               .attr("width", d => x(d.count))
+               .attr("height", y.bandwidth())
+               .attr("fill", "steelblue");
+
+            // Add x-axis
+            svg.append("g")
+               .attr("transform", `translate(0,${height})`)
+               .call(d3.axisBottom(x));
+
+            // Add y-axis
+            svg.append("g")
+               .call(d3.axisLeft(y));
+        });
+    </script>
+</body>
+</html>
